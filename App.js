@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Platform, Text, View, StyleSheet } from 'react-native';
+import { Platform, Text, View, StyleSheet, Button } from 'react-native';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
@@ -29,7 +29,8 @@ const App = () => {
       });
     }
 
-    let location = await Location.getCurrentPositionAsync({});
+    let geocode = await Location.getCurrentPositionAsync({});
+    let location = await Location.reverseGeocodeAsync(geocode.coords);
     setState({ location });
   };
 
@@ -37,12 +38,14 @@ const App = () => {
   if (state.errorMessage) {
     text = state.errorMessage;
   } else if (state.location) {
-    text = JSON.stringify(state.location);
+    // text = JSON.stringify(state.location);
+    text = `You are at ${state.location[0].street} ${state.location[0].name}!`
   }
 
   return (
     <View style={styles.container}>
       <Text style={styles.paragraph}>{text}</Text>
+      <Button style={styles.button} title='update address' onPress={() => _getLocationAsync()} />
     </View>
   );
 }
